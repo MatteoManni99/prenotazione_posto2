@@ -1,9 +1,9 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'  // 👈 aggiungi questa riga
 
 export default function AdminPage() {
   const [seats, setSeats] = useState<any[]>([])
