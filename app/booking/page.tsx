@@ -18,6 +18,7 @@ export default function BookingPage() {
 
   async function reserveSeat(seatId: number) {
     const supabase = getSupabaseClient()
+    const {
       data: { user },
     } = await supabase.auth.getUser()
 
