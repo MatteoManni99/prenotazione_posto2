@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 
 export default function BookingPage() {
   const [seats, setSeats] = useState<any[]>([])
 
   async function loadSeats() {
+    const supabase = getSupabaseClient()
     const { data } = await supabase
       .from('seats')
       .select('*')
@@ -16,7 +17,7 @@ export default function BookingPage() {
   }
 
   async function reserveSeat(seatId: number) {
-    const {
+    const supabase = getSupabaseClient()
       data: { user },
     } = await supabase.auth.getUser()
 
