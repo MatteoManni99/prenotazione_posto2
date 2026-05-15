@@ -224,6 +224,8 @@ export default function BookingPage() {
           <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             🩰 Prenotazione Posti 🩰
           </h1>
+          <p cclassName="text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+            9 Giugno 2026</p>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
 
