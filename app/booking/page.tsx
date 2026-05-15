@@ -222,7 +222,7 @@ export default function BookingPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            🩰 Prenotazione Posti 🩰
+            Prenotazione Posti
           </h1>
           <p className="text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             9 Giugno 2026</p>
