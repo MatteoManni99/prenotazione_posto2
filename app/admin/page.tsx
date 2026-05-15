@@ -1,31 +1,25 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 
-export const dynamic = 'force-dynamic'  // 👈 aggiungi questa riga
+export const dynamic = 'force-dynamic'
 
 export default function AdminPage() {
   const [seats, setSeats] = useState<any[]>([])
 
   async function loadSeats() {
-    const { data } = await supabase
-      .from('seats')
-      .select('*')
-
+    const supabase = getSupabaseClient()
+    const { data } = await supabase.from('seats').select('*')
     setSeats(data || [])
   }
 
   async function freeSeat(id: number) {
+    const supabase = getSupabaseClient()
     await supabase
       .from('seats')
-      .update({
-        is_reserved: false,
-        reserved_by: null,
-        reserved_at: null,
-      })
+      .update({ is_reserved: false, reserved_by: null, reserved_at: null })
       .eq('id', id)
-
     loadSeats()
   }
 
