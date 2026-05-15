@@ -222,7 +222,7 @@ export default function BookingPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            Prenotazione Posti per il Gran Galà di Fine Anno
+            🩰 Prenotazione Posti 🩰
           </h1>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
