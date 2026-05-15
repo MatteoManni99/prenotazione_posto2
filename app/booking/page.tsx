@@ -160,7 +160,7 @@ export default function BookingPage() {
             ← Torna alla mappa
           </button>
           <h1 className="text-3xl font-bold text-amber-400 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-            I tuoi dati
+            Dati Allievo
           </h1>
           <p className="text-zinc-400 mb-6 text-sm">
             Posti selezionati:{' '}
@@ -171,7 +171,7 @@ export default function BookingPage() {
 
           <div className="flex flex-col gap-4">
             <div>
-              <label className="text-zinc-400 text-sm block mb-1">Nome *</label>
+              <label className="text-zinc-400 text-sm block mb-1">Nome Allievo*</label>
               <input
                 className="w-full bg-zinc-800 border border-zinc-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-amber-400 transition-colors"
                 placeholder="Mario"
@@ -180,7 +180,7 @@ export default function BookingPage() {
               />
             </div>
             <div>
-              <label className="text-zinc-400 text-sm block mb-1">Cognome *</label>
+              <label className="text-zinc-400 text-sm block mb-1">Cognome Allievo*</label>
               <input
                 className="w-full bg-zinc-800 border border-zinc-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-amber-400 transition-colors"
                 placeholder="Rossi"
@@ -222,7 +222,7 @@ export default function BookingPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            🎭 Teatro — Prenotazione Posti
+            Prenotazione Posti per il Gran Galà di Fine Anno
           </h1>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
@@ -235,8 +235,8 @@ export default function BookingPage() {
         </div>
 
         {/* Palco */}
-        <div className="bg-gradient-to-r from-amber-900/40 via-amber-700/30 to-amber-900/40 border border-amber-600/40 text-amber-300 text-center py-3 rounded-xl mb-8 font-bold tracking-[0.3em] uppercase text-sm">
-          ★ PALCO ★
+        <div className="bg-gradient-to-r from-zinc-800/60 via-zinc-600/40 to-zinc-800/60 border border-zinc-500/40 text-zinc-300 text-center py-3 rounded-xl mb-8 font-bold tracking-[0.3em] uppercase text-sm">
+          PALCO
         </div>
 
         {/* Blocco A-H */}
