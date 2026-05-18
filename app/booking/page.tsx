@@ -273,7 +273,7 @@ export default function BookingPage() {
             <p className="text-zinc-400 text-sm mb-3">Posti prenotati:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {selected.map(s => (
-                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-sm font-mono">
+                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-lg font-mono">
                   {s.seat_number}
                 </span>
               ))}
