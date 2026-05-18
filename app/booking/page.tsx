@@ -113,7 +113,7 @@ export default function BookingPage() {
       doc.setFont('times', 'italic')
       doc.setFontSize(13)
       doc.setTextColor(161, 161, 170)
-      doc.text('Saggio di Fine Anno — 9 Giugno 2026', pageW / 2, 40, { align: 'center' })
+      doc.text('Saggio di Fine Anno — Teatro del Colle Don Bosco — 9 Giugno 2026', pageW / 2, 40, { align: 'center' })
 
       // Divider
       doc.setDrawColor(251, 191, 36)
@@ -130,9 +130,8 @@ export default function BookingPage() {
 
       const infoRows: [string, string][] = [
         ['Nome:', `${firstName} ${lastName}`],
-        ['Sede di Danza:', sede],
         ['Data evento:', '9 Giugno 2026'],
-        ['Orario:', '20:30'],
+        ['Orario:', '20:15'],
       ]
 
       for (const [label, value] of infoRows) {
@@ -150,7 +149,7 @@ export default function BookingPage() {
 
       // Seats heading
       doc.setFont('helvetica', 'bold')
-      doc.setFontSize(12)
+      doc.setFontSize(16)
       doc.setTextColor(251, 191, 36)
       doc.text('Posti Prenotati', margin, 122)
 
@@ -264,7 +263,7 @@ export default function BookingPage() {
             Prenotazione Confermata!
           </h1>
           <p className="text-zinc-300 mb-2">
-            Benvenuto/a <span className="text-white font-semibold">{firstName} {lastName}</span>
+            <span className="text-white font-semibold">{firstName} {lastName}</span>
           </p>
           <p className="text-zinc-400 mb-6">
             Sede: <span className="text-amber-300">{sede}</span>
