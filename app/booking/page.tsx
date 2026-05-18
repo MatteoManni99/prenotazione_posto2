@@ -29,6 +29,7 @@ export default function BookingPage() {
   const [sede, setSede] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [pdfLoading, setPdfLoading] = useState(false)
 
   async function loadSeats() {
     const supabase = getSupabaseClient()
@@ -82,6 +83,142 @@ export default function BookingPage() {
     setStep('done')
   }
 
+  async function downloadPDF() {
+    setPdfLoading(true)
+    try {
+      // Dynamic import — avoids SSR errors on Next.js
+      const jsPDFModule = await import('jspdf')
+      const jsPDF = jsPDFModule.default
+
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageW = 210
+      const pageH = 297
+      const margin = 20
+
+      // Background
+      doc.setFillColor(24, 24, 27)
+      doc.rect(0, 0, pageW, pageH, 'F')
+
+      // Top amber bar
+      doc.setFillColor(251, 191, 36)
+      doc.rect(0, 0, pageW, 6, 'F')
+
+      // Title
+      doc.setFont('times', 'bold')
+      doc.setFontSize(24)
+      doc.setTextColor(251, 191, 36)
+      doc.text('Biglietto di Prenotazione', pageW / 2, 30, { align: 'center' })
+
+      // Subtitle
+      doc.setFont('times', 'italic')
+      doc.setFontSize(13)
+      doc.setTextColor(161, 161, 170)
+      doc.text('Saggio di Fine Anno — 9 Giugno 2026', pageW / 2, 40, { align: 'center' })
+
+      // Divider
+      doc.setDrawColor(251, 191, 36)
+      doc.setLineWidth(0.5)
+      doc.line(margin, 47, pageW - margin, 47)
+
+      // Info card
+      doc.setFillColor(39, 39, 42)
+      doc.roundedRect(margin, 54, pageW - margin * 2, 56, 4, 4, 'F')
+
+      const labelX = margin + 10
+      const valueX = margin + 52
+      let y = 68
+
+      const infoRows: [string, string][] = [
+        ['Nome:', `${firstName} ${lastName}`],
+        ['Sede di Danza:', sede],
+        ['Data evento:', '9 Giugno 2026'],
+        ['Orario:', '20:30'],
+      ]
+
+      for (const [label, value] of infoRows) {
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(10)
+        doc.setTextColor(161, 161, 170)
+        doc.text(label, labelX, y)
+
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(11)
+        doc.setTextColor(255, 255, 255)
+        doc.text(value, valueX, y)
+        y += 12
+      }
+
+      // Seats heading
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.setTextColor(251, 191, 36)
+      doc.text('Posti Prenotati', margin, 122)
+
+      doc.setDrawColor(63, 63, 70)
+      doc.setLineWidth(0.3)
+      doc.line(margin, 125, pageW - margin, 125)
+
+      // Seat badges
+      const seatNumbers = selected.map(s => s.seat_number)
+      const badgeW = 22
+      const badgeH = 10
+      const gap = 4
+      const perRow = Math.floor((pageW - margin * 2 + gap) / (badgeW + gap))
+      let sx = margin
+      let sy = 130
+
+      seatNumbers.forEach((num, i) => {
+        if (i > 0 && i % perRow === 0) {
+          sx = margin
+          sy += badgeH + 4
+        }
+        doc.setFillColor(251, 191, 36)
+        doc.roundedRect(sx, sy, badgeW, badgeH, 2, 2, 'F')
+        doc.setFont('courier', 'bold')
+        doc.setFontSize(8)
+        doc.setTextColor(24, 24, 27)
+        doc.text(num, sx + badgeW / 2, sy + 6.5, { align: 'center' })
+        sx += badgeW + gap
+      })
+
+      // Note box
+      const noteY = Math.max(sy + badgeH + 14, 178)
+      doc.setFillColor(39, 39, 42)
+      doc.roundedRect(margin, noteY, pageW - margin * 2, 22, 4, 4, 'F')
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9)
+      doc.setTextColor(161, 161, 170)
+      doc.text(
+        "Presentare questo documento (stampato o digitale) all'ingresso del teatro.",
+        pageW / 2, noteY + 8, { align: 'center' }
+      )
+      doc.text(
+        'Il biglietto e\' personale e non cedibile.',
+        pageW / 2, noteY + 15, { align: 'center' }
+      )
+
+      // Bottom bar
+      doc.setFillColor(251, 191, 36)
+      doc.rect(0, pageH - 6, pageW, 6, 'F')
+
+      // Timestamp
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7.5)
+      doc.setTextColor(63, 63, 70)
+      const now = new Date()
+      doc.text(
+        `Generato il ${now.toLocaleDateString('it-IT')} alle ${now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`,
+        pageW / 2, pageH - 10, { align: 'center' }
+      )
+
+      doc.save(`prenotazione_${lastName}_${firstName}.pdf`)
+    } catch (e) {
+      console.error('PDF error', e)
+      alert('Errore nella generazione del PDF. Riprova.')
+    }
+    setPdfLoading(false)
+  }
+
   function renderBlock(rows: string[]) {
     return rows.map(row => {
       const rowSeats = seats.filter(s => s.row_letter === row)
@@ -117,10 +254,11 @@ export default function BookingPage() {
     })
   }
 
+  // ── DONE ────────────────────────────────────────────────────────────────────
   if (step === 'done') {
     return (
       <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md w-full">
           <div className="text-6xl mb-6">🎭</div>
           <h1 className="text-3xl font-bold text-amber-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
             Prenotazione Confermata!
@@ -131,27 +269,54 @@ export default function BookingPage() {
           <p className="text-zinc-400 mb-6">
             Sede: <span className="text-amber-300">{sede}</span>
           </p>
-          <div className="bg-zinc-800 rounded-xl p-4 mb-8">
-            <p className="text-zinc-400 text-sm mb-2">Posti prenotati:</p>
+
+          <div className="bg-zinc-800 rounded-xl p-4 mb-6">
+            <p className="text-zinc-400 text-sm mb-3">Posti prenotati:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {selected.map(s => (
-                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-sm">
+                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-sm font-mono">
                   {s.seat_number}
                 </span>
               ))}
             </div>
           </div>
+
+          {/* PDF Button */}
+          <button
+            onClick={downloadPDF}
+            disabled={pdfLoading}
+            className="w-full bg-amber-400 text-zinc-900 font-bold px-8 py-3.5 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3"
+          >
+            {pdfLoading ? (
+              <>
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                Generazione PDF…
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                </svg>
+                Scarica il tuo biglietto PDF
+              </>
+            )}
+          </button>
+
           <button
             onClick={() => { setStep('map'); setSelected([]); setFirstName(''); setLastName(''); setSede(''); loadSeats() }}
-            className="bg-amber-400 text-zinc-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-colors"
+            className="w-full text-zinc-500 hover:text-zinc-300 py-2 text-sm transition-colors"
           >
-            Torna alla Mappa
+            Torna alla mappa →
           </button>
         </div>
       </main>
     )
   }
 
+  // ── FORM ─────────────────────────────────────────────────────────────────────
   if (step === 'form') {
     return (
       <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
@@ -215,33 +380,30 @@ export default function BookingPage() {
     )
   }
 
-  // Step: map
+  // ── MAP ───────────────────────────────────────────────────────────────────────
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-6 pb-32">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             Prenotazione Posti
           </h1>
           <p className="text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            9 Giugno 2026</p>
+            9 Giugno 2026
+          </p>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
 
-        {/* Legenda */}
         <div className="flex gap-6 justify-center mb-8 text-sm">
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-emerald-700 inline-block"></span><span className="text-zinc-300">Disponibile</span></div>
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-amber-400 inline-block"></span><span className="text-zinc-300">Selezionato</span></div>
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-rose-700 inline-block"></span><span className="text-zinc-300">Occupato</span></div>
         </div>
 
-        {/* Palco */}
         <div className="bg-gradient-to-r from-zinc-800/60 via-zinc-600/40 to-zinc-800/60 border border-zinc-500/40 text-zinc-300 text-center py-3 rounded-xl mb-8 font-bold tracking-[0.3em] uppercase text-sm">
           PALCO
         </div>
 
-        {/* Blocco A-H */}
         <div className="mb-8">
           <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Anteriore — File A·H</p>
           <div className="overflow-x-auto flex justify-center">
@@ -249,14 +411,12 @@ export default function BookingPage() {
           </div>
         </div>
 
-        {/* Separatore */}
         <div className="border-t border-dashed border-zinc-700 my-6 relative">
           <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-4 text-zinc-500 text-xs uppercase tracking-widest">
             Corridoio
           </span>
         </div>
 
-        {/* Blocco I-S */}
         <div className="mb-10">
           <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Posteriore — File I·S</p>
           <div className="overflow-x-auto flex justify-center">
@@ -264,7 +424,6 @@ export default function BookingPage() {
           </div>
         </div>
 
-        {/* Numero colonne */}
         <div className="flex justify-center gap-1 mb-8 pl-6">
           {Array.from({ length: 16 }, (_, i) => (
             <span key={i} className="w-7 text-center text-xs text-zinc-600 font-mono">{i + 1}</span>
@@ -272,7 +431,6 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {/* Bottom bar posti selezionati */}
       {selected.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 p-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
