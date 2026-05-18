@@ -405,8 +405,13 @@ export default function BookingPage() {
 
         <div className="mb-8">
           <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Anteriore — File A·H</p>
-          <div className="overflow-x-auto flex justify-center">
+          {/* <div className="overflow-x-auto flex justify-center">
             <div>{renderBlock(FRONT_ROWS)}</div>
+          </div> */}
+          <div className="overflow-x-auto">
+            <div className="min-w-max mx-auto">
+              {renderBlock(FRONT_ROWS)}
+            </div>
           </div>
         </div>
 
@@ -418,8 +423,13 @@ export default function BookingPage() {
 
         <div className="mb-10">
           <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Posteriore — File I·S</p>
-          <div className="overflow-x-auto flex justify-center">
+          {/* <div className="overflow-x-auto flex justify-center">
             <div>{renderBlock(BACK_ROWS)}</div>
+          </div> */}
+          <div className="overflow-x-auto">
+            <div className="min-w-max mx-auto">
+              {renderBlock(BACK_ROWS)}
+            </div>
           </div>
         </div>
 
