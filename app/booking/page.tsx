@@ -174,7 +174,7 @@ export default function BookingPage() {
         doc.setFillColor(251, 191, 36)
         doc.roundedRect(sx, sy, badgeW, badgeH, 2, 2, 'F')
         doc.setFont('courier', 'bold')
-        doc.setFontSize(8)
+        doc.setFontSize(16)
         doc.setTextColor(24, 24, 27)
         doc.text(num, sx + badgeW / 2, sy + 6.5, { align: 'center' })
         sx += badgeW + gap
