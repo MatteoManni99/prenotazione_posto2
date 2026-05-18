@@ -408,9 +408,9 @@ export default function BookingPage() {
           {/* <div className="overflow-x-auto flex justify-center">
             <div>{renderBlock(FRONT_ROWS)}</div>
           </div> */}
-          <div className="overflow-x-auto">
-            <div className="min-w-max mx-auto">
-              {renderBlock(FRONT_ROWS)}
+          <div className="overflow-x-auto touch-pan-x">
+            <div className="min-w-max flex justify-center px-4">
+              <div>{renderBlock(FRONT_ROWS)}</div>
             </div>
           </div>
         </div>
@@ -426,9 +426,9 @@ export default function BookingPage() {
           {/* <div className="overflow-x-auto flex justify-center">
             <div>{renderBlock(BACK_ROWS)}</div>
           </div> */}
-          <div className="overflow-x-auto">
-            <div className="min-w-max mx-auto">
-              {renderBlock(BACK_ROWS)}
+          <div className="overflow-x-auto touch-pan-x">
+            <div className="min-w-max flex justify-center px-4">
+              <div>{renderBlock(BACK_ROWS)}</div>
             </div>
           </div>
         </div>
