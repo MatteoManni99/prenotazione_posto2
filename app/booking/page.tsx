@@ -107,7 +107,7 @@ export default function BookingPage() {
       doc.setFont('times', 'bold')
       doc.setFontSize(24)
       doc.setTextColor(251, 191, 36)
-      doc.text('Biglietto di Prenotazione', pageW / 2, 30, { align: 'center' })
+      doc.text('Conferma di Prenotazione', pageW / 2, 30, { align: 'center' })
 
       // Subtitle
       doc.setFont('times', 'italic')
@@ -185,15 +185,11 @@ export default function BookingPage() {
       doc.setFillColor(39, 39, 42)
       doc.roundedRect(margin, noteY, pageW - margin * 2, 22, 4, 4, 'F')
       doc.setFont('helvetica', 'normal')
-      doc.setFontSize(9)
+      doc.setFontSize(12)
       doc.setTextColor(161, 161, 170)
       doc.text(
-        "Presentare questo documento (stampato o digitale) all'ingresso del teatro.",
+        "Presentare questo documento (stampato o digitale) per il ritiro del biglietto effettivo.",
         pageW / 2, noteY + 8, { align: 'center' }
-      )
-      doc.text(
-        'Il biglietto e\' personale e non cedibile.',
-        pageW / 2, noteY + 15, { align: 'center' }
       )
 
       // Bottom bar
@@ -299,7 +295,7 @@ export default function BookingPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                 </svg>
-                Scarica il tuo biglietto PDF
+                Scarica la tua prenotazione in PDF
               </>
             )}
           </button>
