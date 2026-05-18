@@ -258,7 +258,7 @@ export default function BookingPage() {
     return (
       <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
         <div className="text-center max-w-md w-full">
-          <div className="text-6xl mb-6">🎭</div>
+          <div className="text-6xl mb-6"></div>
           <h1 className="text-3xl font-bold text-amber-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
             Prenotazione Confermata!
           </h1>
@@ -273,7 +273,7 @@ export default function BookingPage() {
             <p className="text-zinc-400 text-sm mb-3">Posti prenotati:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {selected.map(s => (
-                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-lg font-mono">
+                <span key={s.id} className="bg-amber-400 text-zinc-900 font-bold px-3 py-1 rounded-full text-xl font-mono">
                   {s.seat_number}
                 </span>
               ))}
