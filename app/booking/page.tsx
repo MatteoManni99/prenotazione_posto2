@@ -216,7 +216,7 @@ export default function BookingPage() {
 
   function renderBlock(rows: string[]) {
     return rows.map(row => {
-      const rowSeats = seats.filter(s => s.row_letter === row)
+      const rowSeats = seats.filter(s => s.row_letter === row).sort((a, b) => b.seat_index - a.seat_index)
       return (
         <div key={row} className="flex items-center gap-1 mb-1">
           <span className="w-5 text-center text-xs font-bold text-amber-400 font-mono">{row}</span>
