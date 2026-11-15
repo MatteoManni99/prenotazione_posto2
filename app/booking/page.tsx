@@ -113,7 +113,7 @@ export default function BookingPage() {
       doc.setFont('times', 'italic')
       doc.setFontSize(13)
       doc.setTextColor(161, 161, 170)
-      doc.text('Saggio di Fine Anno — Teatro del Colle Don Bosco — 9 Giugno 2026', pageW / 2, 40, { align: 'center' })
+      doc.text('Spettacolo di Natale — Teatro del Colle Don Bosco — 20 Dicembre 2026', pageW / 2, 40, { align: 'center' })
 
       // Divider
       doc.setDrawColor(251, 191, 36)
@@ -130,8 +130,8 @@ export default function BookingPage() {
 
       const infoRows: [string, string][] = [
         ['Nome:', `${firstName} ${lastName}`],
-        ['Data evento:', '9 Giugno 2026'],
-        ['Orario:', '20:15'],
+        ['Data evento:', '20 Dicembre 2026'],
+        ['Orario:', '18:00'],
       ]
 
       for (const [label, value] of infoRows) {
@@ -384,7 +384,7 @@ export default function BookingPage() {
             Prenotazione Posti
           </h1>
           <p className="text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            9 Giugno 2026
+            20 Dicembre 2026
           </p>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
