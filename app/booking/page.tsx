@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '@/lib/supabase'
+import { BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
 
 type Seat = {
   id: number
@@ -14,10 +15,6 @@ type Seat = {
 
 type BookingStep = 'map' | 'form' | 'done'
 
-const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
-
-const FRONT_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-const BACK_ROWS  = ['I', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']
 
 export default function BookingPage() {
   const [seats, setSeats] = useState<Seat[]>([])
@@ -113,7 +110,7 @@ export default function BookingPage() {
       doc.setFont('times', 'italic')
       doc.setFontSize(13)
       doc.setTextColor(161, 161, 170)
-      doc.text('Spettacolo di Natale — Teatro del Colle Don Bosco — 20 Dicembre 2026', pageW / 2, 40, { align: 'center' })
+      doc.text(`${SAGGIO.titolo} — ${SAGGIO.luogo} — ${SAGGIO.data}`, pageW / 2, 40, { align: 'center' })
 
       // Divider
       doc.setDrawColor(251, 191, 36)
@@ -130,8 +127,8 @@ export default function BookingPage() {
 
       const infoRows: [string, string][] = [
         ['Nome:', `${firstName} ${lastName}`],
-        ['Data evento:', '20 Dicembre 2026'],
-        ['Orario:', '18:00'],
+        ['Data evento:', SAGGIO.data],
+        ['Orario:', SAGGIO.orario],
       ]
 
       for (const [label, value] of infoRows) {
@@ -384,7 +381,7 @@ export default function BookingPage() {
             Prenotazione Posti
           </h1>
           <p className="text-xl sm:text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-            20 Dicembre 2026
+            {SAGGIO.data}
           </p>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>

@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '@/lib/supabase'
+import { ADMIN_PASSWORD, BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
 
-const ADMIN_PASSWORD = 'Ares?'
-
-const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
-
-const FRONT_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-const BACK_ROWS  = ['I', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']
 const ALL_ROWS = [...FRONT_ROWS, ...BACK_ROWS]
 
 type Seat = {
@@ -181,7 +176,7 @@ export default function AdminPage() {
         doc.setFontSize(9)
         doc.setTextColor(113, 113, 122)
         doc.text(
-          `${total} posti prenotati su ${seats.length}`,
+          `${SAGGIO.titolo} — ${SAGGIO.luogo} — ${SAGGIO.data}, ore ${SAGGIO.orario}  ·  ${total} posti prenotati su ${seats.length}`,
           pageW / 2, 16, { align: 'center' }
         )
 
