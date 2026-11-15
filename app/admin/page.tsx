@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '@/lib/supabase'
 
-const ADMIN_PASSWORD = '@9L5SzigeCbSECgDHW33es3555532pldpanQSlpspsm12=3441??33'
+const ADMIN_PASSWORD = 'Black!'
 
-const SEDI = ['Pavarolo', 'Marentino', 'Sciolze', 'Andezeno', 'Castelnuovo']
+const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
 
 type Booking = {
   id: number

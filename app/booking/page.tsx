@@ -14,7 +14,7 @@ type Seat = {
 
 type BookingStep = 'map' | 'form' | 'done'
 
-const SEDI = ['Pavarolo', 'Marentino', 'Sciolze', 'Andezeno', 'Castelnuovo']
+const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
 
 const FRONT_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 const BACK_ROWS  = ['I', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']
