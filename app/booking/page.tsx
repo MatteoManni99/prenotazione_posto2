@@ -92,6 +92,7 @@ export default function BookingPage() {
   const [sede, setSede] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [seatConflict, setSeatConflict] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(false)
 
   const remaining = useOpeningCountdown()
@@ -131,6 +132,16 @@ export default function BookingPage() {
     )
   }
 
+  // Se un posto è stato preso da altri, tornando alla mappa la selezione si azzera
+  function backToMap() {
+    if (seatConflict) {
+      setSelected([])
+      setSeatConflict(false)
+      setError('')
+    }
+    setStep('map')
+  }
+
   async function handleSubmit() {
     if (!isOpen) {
       setError('Le prenotazioni non sono ancora aperte.')
@@ -155,6 +166,7 @@ export default function BookingPage() {
       console.error('Errore prenotazione', dbErr)
       if (dbErr.code === '23505') {
         setError('Uno dei posti scelti è appena stato prenotato da qualcun altro. Torna alla mappa e scegline un altro.')
+        setSeatConflict(true)
         loadSeats()
       } else if (dbErr.code === '42501') {
         setError(`Prenotazione rifiutata dal database (regola di sicurezza su Supabase): ${dbErr.message}`)
@@ -401,7 +413,7 @@ export default function BookingPage() {
     return (
       <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <button onClick={() => setStep('map')} className="text-zinc-400 hover:text-white mb-6 flex items-center gap-2 transition-colors">
+          <button onClick={backToMap} className="text-zinc-400 hover:text-white mb-6 flex items-center gap-2 transition-colors">
             ← Torna alla mappa
           </button>
           <h1 className="text-3xl font-bold text-amber-400 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
@@ -449,7 +461,7 @@ export default function BookingPage() {
 
             <button
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || seatConflict}
               className="w-full bg-amber-400 text-zinc-900 font-bold py-3 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {submitting ? 'Prenotazione in corso…' : 'Conferma Prenotazione'}
