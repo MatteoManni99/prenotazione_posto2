@@ -152,7 +152,15 @@ export default function BookingPage() {
     const { error: dbErr } = await supabase.from('bookings').insert(rows)
     setSubmitting(false)
     if (dbErr) {
-      setError('Errore durante la prenotazione. Riprova.')
+      console.error('Errore prenotazione', dbErr)
+      if (dbErr.code === '23505') {
+        setError('Uno dei posti scelti è appena stato prenotato da qualcun altro. Torna alla mappa e scegline un altro.')
+        loadSeats()
+      } else if (dbErr.code === '42501') {
+        setError('Prenotazione rifiutata dal database (regola di sicurezza su Supabase).')
+      } else {
+        setError(`Errore durante la prenotazione. Riprova. (${dbErr.code ?? ''} ${dbErr.message})`)
+      }
       return
     }
     setStep('done')
