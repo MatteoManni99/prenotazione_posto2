@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '@/lib/supabase'
 
-const ADMIN_PASSWORD = 'Black!'
+const ADMIN_PASSWORD = 'Ares?'
 
 const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
 
