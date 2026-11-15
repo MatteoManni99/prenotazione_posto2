@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '@/lib/supabase'
-import { BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
+import { APERTURA_PRENOTAZIONI, BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
 
 type Seat = {
   id: number
@@ -14,6 +14,70 @@ type Seat = {
 }
 
 type BookingStep = 'map' | 'form' | 'done'
+
+const OPENING_TS = new Date(APERTURA_PRENOTAZIONI).getTime()
+
+/** Millisecondi mancanti all'apertura, sincronizzati con l'ora del server. */
+function useOpeningCountdown() {
+  const [remaining, setRemaining] = useState<number | null>(null)
+
+  useEffect(() => {
+    let offset = 0 // ora server - ora locale
+    let timer: ReturnType<typeof setInterval>
+    const tick = () => {
+      const left = OPENING_TS - (Date.now() + offset)
+      setRemaining(Math.max(0, left))
+      if (left <= 0) clearInterval(timer)
+    }
+    const t0 = Date.now()
+    fetch('/api/now', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(({ now }: { now: number }) => { offset = now - (t0 + Date.now()) / 2 })
+      .catch(() => {})
+      .finally(() => { tick(); timer = setInterval(tick, 250) })
+    return () => clearInterval(timer)
+  }, [])
+
+  return remaining
+}
+
+function splitTime(ms: number) {
+  const total = Math.ceil(ms / 1000)
+  return {
+    giorni: Math.floor(total / 86400),
+    ore: Math.floor((total % 86400) / 3600),
+    minuti: Math.floor((total % 3600) / 60),
+    secondi: total % 60,
+  }
+}
+
+function Countdown({ remaining }: { remaining: number }) {
+  const t = splitTime(remaining)
+  const opening = new Date(OPENING_TS).toLocaleString('it-IT', {
+    timeZone: 'Europe/Rome', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+  })
+  const units: [string, number][] = [['giorni', t.giorni], ['ore', t.ore], ['minuti', t.minuti], ['secondi', t.secondi]]
+  return (
+    <div className="bg-zinc-900 border border-amber-400/40 rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 text-center">
+      <p className="text-amber-400 font-bold text-lg sm:text-xl mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+        Prenotazioni non ancora aperte
+      </p>
+      <p className="text-zinc-400 text-sm mb-4">
+        Apertura: <span className="text-zinc-200">{opening}</span>
+      </p>
+      <div className="flex justify-center gap-2 sm:gap-4" role="timer" aria-live="off">
+        {units.map(([label, value]) => (
+          <div key={label} className="bg-zinc-800 rounded-xl w-16 sm:w-20 py-2 sm:py-3">
+            <div className="text-2xl sm:text-4xl font-bold text-white font-mono tabular-nums">
+              {String(value).padStart(2, '0')}
+            </div>
+            <div className="text-zinc-500 text-[10px] sm:text-xs uppercase tracking-widest">{label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 
 export default function BookingPage() {
@@ -27,6 +91,9 @@ export default function BookingPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [pdfLoading, setPdfLoading] = useState(false)
+
+  const remaining = useOpeningCountdown()
+  const isOpen = remaining === 0
 
   async function loadSeats() {
     const supabase = getSupabaseClient()
@@ -48,8 +115,11 @@ export default function BookingPage() {
 
   useEffect(() => { loadSeats() }, [])
 
+  // All'apertura ricarica i posti, così la mappa è aggiornata senza refresh
+  useEffect(() => { if (isOpen) loadSeats() }, [isOpen])
+
   function toggleSeat(seat: Seat) {
-    if (seat.booked) return
+    if (seat.booked || !isOpen) return
     setSelected(prev =>
       prev.find(s => s.id === seat.id)
         ? prev.filter(s => s.id !== seat.id)
@@ -58,6 +128,10 @@ export default function BookingPage() {
   }
 
   async function handleSubmit() {
+    if (!isOpen) {
+      setError('Le prenotazioni non sono ancora aperte.')
+      return
+    }
     if (!firstName.trim() || !lastName.trim() || !sede) {
       setError('Compila tutti i campi.')
       return
@@ -223,6 +297,8 @@ export default function BookingPage() {
               let cls = 'w-8 h-8 sm:w-7 sm:h-7 rounded text-xs font-bold transition-all duration-150 flex items-center justify-center cursor-pointer select-none '
               if (seat.booked) {
                 cls += 'bg-rose-700 text-rose-300 cursor-not-allowed opacity-70'
+              } else if (!isOpen) {
+                cls += 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
               } else if (isSelected) {
                 cls += 'bg-amber-400 text-zinc-900 shadow-lg scale-110 ring-2 ring-amber-200'
               } else {
@@ -232,7 +308,7 @@ export default function BookingPage() {
                 <button
                   key={seat.id}
                   className={cls}
-                  disabled={seat.booked}
+                  disabled={seat.booked || !isOpen}
                   onClick={() => toggleSeat(seat)}
                   title={seat.seat_number}
                 >
@@ -383,8 +459,12 @@ export default function BookingPage() {
           <p className="text-xl sm:text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             {SAGGIO.data}
           </p>
-          <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
+          <p className="text-zinc-400 text-sm">
+            {isOpen ? 'Seleziona uno o più posti e prosegui' : 'La mappa si sbloccherà allo scadere del countdown'}
+          </p>
         </div>
+
+        {remaining !== null && remaining > 0 && <Countdown remaining={remaining} />}
 
         <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-6 sm:mb-8 text-sm">
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-emerald-700 inline-block"></span><span className="text-zinc-300">Disponibile</span></div>
@@ -416,7 +496,7 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {selected.length > 0 && (
+      {isOpen && selected.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-20 bg-zinc-900 border-t border-zinc-700 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex flex-wrap gap-1 flex-1 max-h-16 overflow-y-auto">

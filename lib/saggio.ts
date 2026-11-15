@@ -13,6 +13,13 @@ export const SAGGIO = {
   orario: '18:00',
 }
 
+/**
+ * Apertura delle prenotazioni (ora italiana: +01:00 d'inverno, +02:00 d'estate).
+ * Prima di questo istante la mappa è bloccata e viene mostrato un countdown.
+ * Ricordarsi di aggiornare lo stesso valore in supabase/apertura_prenotazioni.sql.
+ */
+export const APERTURA_PRENOTAZIONI = '2026-11-15T13:53:00+01:00'
+
 /** Sedi di danza selezionabili nel modulo di prenotazione */
 export const SEDI = ['Pavarolo', 'Marentino', 'Villanova', 'Andezeno', 'Castelnuovo']
 
