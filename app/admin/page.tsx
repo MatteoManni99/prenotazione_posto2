@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { setAdminBooking } from '@/lib/adminBooking'
 import { getSupabaseClient } from '@/lib/supabase'
 import { ADMIN_PASSWORD, BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
 
@@ -527,12 +529,22 @@ export default function AdminPage() {
             </h1>
             <p className="text-zinc-500 text-sm mt-1">Gestione prenotazioni teatro</p>
           </div>
-          <button
-            onClick={() => setAuthed(false)}
-            className="text-zinc-500 hover:text-white text-sm transition-colors py-2 shrink-0"
-          >
-            Esci →
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="/booking"
+              onClick={() => setAdminBooking(true)}
+              className="bg-amber-400 text-zinc-900 font-bold px-4 py-2 rounded-xl text-sm hover:bg-amber-300 transition-colors whitespace-nowrap"
+              title="Prenota anche prima dell'apertura"
+            >
+              ＋ Prenota posti
+            </Link>
+            <button
+              onClick={() => { setAdminBooking(false); setAuthed(false) }}
+              className="text-zinc-500 hover:text-white text-sm transition-colors py-2"
+            >
+              Esci →
+            </button>
+          </div>
         </div>
 
         {/* Stats */}

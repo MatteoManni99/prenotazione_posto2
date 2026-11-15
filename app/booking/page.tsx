@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { getSupabaseClient } from '@/lib/supabase'
+import { useAdminBooking } from '@/lib/adminBooking'
 import { APERTURA_PRENOTAZIONI, BACK_ROWS, FRONT_ROWS, SAGGIO, SEDI } from '@/lib/saggio'
 
 type Seat = {
@@ -93,7 +95,9 @@ export default function BookingPage() {
   const [pdfLoading, setPdfLoading] = useState(false)
 
   const remaining = useOpeningCountdown()
-  const isOpen = remaining === 0
+  const isAdmin = useAdminBooking()
+  // L'admin può prenotare anche prima dell'apertura
+  const isOpen = remaining === 0 || isAdmin
 
   async function loadSeats() {
     const supabase = getSupabaseClient()
@@ -464,7 +468,14 @@ export default function BookingPage() {
           </p>
         </div>
 
-        {remaining !== null && remaining > 0 && <Countdown remaining={remaining} />}
+        {isAdmin ? (
+          <div className="bg-amber-400/10 border border-amber-400/40 text-amber-300 rounded-xl px-4 py-3 mb-6 sm:mb-8 text-sm flex flex-wrap items-center justify-between gap-2">
+            <span>Modalità admin: puoi prenotare anche prima dell&apos;apertura.</span>
+            <Link href="/admin" className="underline hover:text-amber-200">← Torna all&apos;admin</Link>
+          </div>
+        ) : (
+          remaining !== null && remaining > 0 && <Countdown remaining={remaining} />
+        )}
 
         <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-6 sm:mb-8 text-sm">
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-emerald-700 inline-block"></span><span className="text-zinc-300">Disponibile</span></div>
