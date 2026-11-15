@@ -219,11 +219,11 @@ export default function BookingPage() {
       const rowSeats = seats.filter(s => s.row_letter === row).sort((a, b) => b.seat_index - a.seat_index)
       return (
         <div key={row} className="flex items-center gap-1 mb-1">
-          <span className="w-5 text-center text-xs font-bold text-amber-400 font-mono">{row}</span>
+          <span className="sticky left-0 z-10 bg-zinc-950 w-6 text-center text-xs font-bold text-amber-400 font-mono shrink-0">{row}</span>
           <div className="flex gap-1">
             {rowSeats.map(seat => {
               const isSelected = !!selected.find(s => s.id === seat.id)
-              let cls = 'w-7 h-7 rounded text-xs font-bold transition-all duration-150 flex items-center justify-center cursor-pointer select-none '
+              let cls = 'w-8 h-8 sm:w-7 sm:h-7 rounded text-xs font-bold transition-all duration-150 flex items-center justify-center cursor-pointer select-none '
               if (seat.booked) {
                 cls += 'bg-rose-700 text-rose-300 cursor-not-allowed opacity-70'
               } else if (isSelected) {
@@ -377,69 +377,52 @@ export default function BookingPage() {
 
   // ── MAP ───────────────────────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-6 pb-32">
+    <main className="min-h-screen bg-zinc-950 text-white px-4 sm:px-6 pt-6 pb-40">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             Prenotazione Posti
           </h1>
-          <p className="text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+          <p className="text-xl sm:text-2xl font-bold text-amber-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
             20 Dicembre 2026
           </p>
           <p className="text-zinc-400 text-sm">Seleziona uno o più posti e prosegui</p>
         </div>
 
-        <div className="flex gap-6 justify-center mb-8 text-sm">
+        <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center mb-6 sm:mb-8 text-sm">
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-emerald-700 inline-block"></span><span className="text-zinc-300">Disponibile</span></div>
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-amber-400 inline-block"></span><span className="text-zinc-300">Selezionato</span></div>
           <div className="flex items-center gap-2"><span className="w-5 h-5 rounded bg-rose-700 inline-block"></span><span className="text-zinc-300">Occupato</span></div>
         </div>
 
-        <div className="bg-gradient-to-r from-zinc-800/60 via-zinc-600/40 to-zinc-800/60 border border-zinc-500/40 text-zinc-300 text-center py-3 rounded-xl mb-8 font-bold tracking-[0.3em] uppercase text-sm">
+        <div className="bg-gradient-to-r from-zinc-800/60 via-zinc-600/40 to-zinc-800/60 border border-zinc-500/40 text-zinc-300 text-center py-3 rounded-xl mb-6 sm:mb-8 font-bold tracking-[0.3em] uppercase text-sm">
           PALCO
         </div>
 
-        <div className="mb-8">
-          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Anteriore — File A·H</p>
-          {/* <div className="overflow-x-auto flex justify-center">
-            <div>{renderBlock(FRONT_ROWS)}</div>
-          </div> */}
-          <div className="overflow-x-auto touch-pan-x">
-            <div className="min-w-max flex justify-center px-4">
-              <div>{renderBlock(FRONT_ROWS)}</div>
+        <p className="sm:hidden text-zinc-500 text-xs text-center mb-3">← Scorri lateralmente per vedere tutti i posti →</p>
+
+        {/* Un solo contenitore scorrevole: i due blocchi scorrono insieme e la lettera della fila resta visibile */}
+        <div className="overflow-x-auto -mx-4 sm:mx-0 pb-2">
+          <div className="min-w-max w-fit mx-auto pr-4">
+            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Anteriore — File A·H</p>
+            {renderBlock(FRONT_ROWS)}
+
+            <div className="border-t border-dashed border-zinc-700 my-6 relative">
+              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-4 text-zinc-500 text-xs uppercase tracking-widest">
+                Corridoio
+              </span>
             </div>
+
+            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Posteriore — File I·S</p>
+            {renderBlock(BACK_ROWS)}
           </div>
-        </div>
-
-        <div className="border-t border-dashed border-zinc-700 my-6 relative">
-          <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-4 text-zinc-500 text-xs uppercase tracking-widest">
-            Corridoio
-          </span>
-        </div>
-
-        <div className="mb-10">
-          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-3 text-center">Blocco Posteriore — File I·S</p>
-          {/* <div className="overflow-x-auto flex justify-center">
-            <div>{renderBlock(BACK_ROWS)}</div>
-          </div> */}
-          <div className="overflow-x-auto touch-pan-x">
-            <div className="min-w-max flex justify-center px-4">
-              <div>{renderBlock(BACK_ROWS)}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-center gap-1 mb-8 pl-6">
-          {Array.from({ length: 16 }, (_, i) => (
-            <span key={i} className="w-7 text-center text-xs text-zinc-600 font-mono">{i + 1}</span>
-          ))}
         </div>
       </div>
 
       {selected.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 p-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-1 flex-1">
+        <div className="fixed bottom-0 left-0 right-0 z-20 bg-zinc-900 border-t border-zinc-700 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex flex-wrap gap-1 flex-1 max-h-16 overflow-y-auto">
               {selected.map(s => (
                 <button
                   key={s.id}
@@ -453,7 +436,7 @@ export default function BookingPage() {
             </div>
             <button
               onClick={() => setStep('form')}
-              className="bg-amber-400 text-zinc-900 font-bold px-6 py-2.5 rounded-xl hover:bg-amber-300 transition-colors whitespace-nowrap shrink-0"
+              className="w-full sm:w-auto bg-amber-400 text-zinc-900 font-bold px-6 py-3 sm:py-2.5 rounded-xl hover:bg-amber-300 transition-colors whitespace-nowrap shrink-0"
             >
               Prenota {selected.length} {selected.length === 1 ? 'posto' : 'posti'} →
             </button>

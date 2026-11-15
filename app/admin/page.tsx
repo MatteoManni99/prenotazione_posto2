@@ -49,6 +49,7 @@ export default function AdminPage() {
   const [seats, setSeats] = useState<Seat[]>([])
   const [view, setView] = useState<'table' | 'map'>('table')
   const [pdfLoading, setPdfLoading] = useState(false)
+  const [mapSeatId, setMapSeatId] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [sedeFilter, setSedeFilter] = useState('')
@@ -376,33 +377,112 @@ export default function AdminPage() {
   function renderMapBlock(rows: string[]) {
     return rows.map(row => (
       <div key={row} className="flex items-center gap-1 mb-1">
-        <span className="w-5 text-center text-xs font-bold text-amber-400 font-mono shrink-0">{row}</span>
+        <span className="sticky left-0 z-10 bg-zinc-950 w-6 text-center text-xs font-bold text-amber-400 font-mono shrink-0">{row}</span>
         <div className="flex gap-1">
           {seatsOfRow(row).map(seat => {
             const b = bookingBySeat.get(seat.id)
             const dimmed = isFiltering && (!b || !filteredIds.has(b.id))
             return (
-              <div
+              <button
                 key={seat.id}
+                type="button"
+                onClick={() => setMapSeatId(mapSeatId === seat.id ? null : seat.id)}
                 title={b ? `${seat.seat_number} — ${b.first_name} ${b.last_name} (${b.sede})` : `${seat.seat_number} — libero`}
-                className={`w-[4.5rem] h-11 rounded px-1 py-0.5 flex flex-col leading-tight overflow-hidden transition-opacity ${
+                className={`w-14 h-10 sm:w-[4.5rem] sm:h-11 rounded px-1 py-0.5 flex flex-col text-left leading-tight overflow-hidden transition-opacity ${
                   b ? 'bg-rose-900/70 border border-rose-600/60' : 'bg-zinc-800/60 border border-zinc-700/60'
-                } ${dimmed ? 'opacity-25' : ''}`}
+                } ${dimmed ? 'opacity-25' : ''} ${mapSeatId === seat.id ? 'ring-2 ring-amber-400' : ''}`}
               >
-                <span className="text-[9px] font-mono text-zinc-400">{seat.seat_number}</span>
+                <span className="text-[8px] sm:text-[9px] font-mono text-zinc-400">{seat.seat_number}</span>
                 {b && (
                   <>
-                    <span className="text-[10px] font-bold text-white truncate">{b.last_name}</span>
-                    <span className="text-[10px] text-zinc-300 truncate">{b.first_name}</span>
+                    <span className="w-full text-[9px] sm:text-[10px] font-bold text-white truncate">{b.last_name}</span>
+                    <span className="w-full text-[9px] sm:text-[10px] text-zinc-300 truncate">{b.first_name}</span>
                   </>
                 )}
-              </div>
+              </button>
             )
           })}
         </div>
       </div>
     ))
   }
+
+  function renderEditFields(b: Booking, size: string) {
+    if (!editing) return null
+    const cls = `bg-zinc-800 border border-zinc-600 text-white rounded-lg w-full focus:outline-none focus:border-amber-400 ${size}`
+    return {
+      first: <input className={cls} placeholder="Nome" value={editing.first_name} onChange={e => setEditing({ ...editing, first_name: e.target.value })} />,
+      last: <input className={cls} placeholder="Cognome" value={editing.last_name} onChange={e => setEditing({ ...editing, last_name: e.target.value })} />,
+      sede: (
+        <select className={cls} value={editing.sede} onChange={e => setEditing({ ...editing, sede: e.target.value })}>
+          {SEDI.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      ),
+      actions: (
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={saveEdit}
+            disabled={savingId === b.id}
+            className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+          >
+            {savingId === b.id ? '…' : 'Salva'}
+          </button>
+          <button
+            onClick={() => setEditing(null)}
+            className="flex-1 sm:flex-none bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors"
+          >
+            Annulla
+          </button>
+        </div>
+      ),
+    }
+  }
+
+  function renderRowActions(b: Booking) {
+    return confirmDelete === b.id ? (
+      <div className="flex gap-2 justify-end items-center">
+        <span className="text-zinc-400 text-xs">Sicuro?</span>
+        <button
+          onClick={() => deleteBooking(b.id)}
+          disabled={deletingId === b.id}
+          className="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+        >
+          {deletingId === b.id ? '…' : 'Sì, elimina'}
+        </button>
+        <button
+          onClick={() => setConfirmDelete(null)}
+          className="bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors"
+        >
+          No
+        </button>
+      </div>
+    ) : (
+      <div className="flex gap-2 justify-end">
+        <button
+          onClick={() => setEditing({ id: b.id, first_name: b.first_name, last_name: b.last_name, sede: b.sede })}
+          className="bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors"
+        >
+          Modifica
+        </button>
+        <button
+          onClick={() => setConfirmDelete(b.id)}
+          className="bg-rose-800 hover:bg-rose-600 text-white px-3 py-2 sm:py-1 rounded-lg text-xs font-bold transition-colors"
+        >
+          Elimina
+        </button>
+      </div>
+    )
+  }
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('it-IT', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
+  }
+
+  const mapSeat = mapSeatId !== null ? seatById.get(mapSeatId) : undefined
+  const mapBooking = mapSeatId !== null ? bookingBySeat.get(mapSeatId) : undefined
 
   // ── LOGIN ────────────────────────────────────────────────
   if (!authed) {
