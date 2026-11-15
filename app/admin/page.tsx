@@ -521,35 +521,35 @@ export default function AdminPage() {
 
   // ── DASHBOARD ────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-6">
+    <main className="min-h-screen bg-zinc-950 text-white px-4 py-6 sm:p-6">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-amber-400" style={{ fontFamily: 'Georgia, serif' }}>
+        <div className="flex items-start justify-between gap-4 mb-6 sm:mb-8">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-amber-400" style={{ fontFamily: 'Georgia, serif' }}>
               🎭 Dashboard Admin
             </h1>
             <p className="text-zinc-500 text-sm mt-1">Gestione prenotazioni teatro</p>
           </div>
           <button
             onClick={() => setAuthed(false)}
-            className="text-zinc-500 hover:text-white text-sm transition-colors"
+            className="text-zinc-500 hover:text-white text-sm transition-colors py-2 shrink-0"
           >
             Esci →
           </button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-          <div className="bg-zinc-800 rounded-xl p-4 col-span-2 sm:col-span-1 lg:col-span-1">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="bg-zinc-800 rounded-xl p-3 sm:p-4 col-span-3 lg:col-span-1 flex lg:block items-baseline justify-between">
             <p className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Totale</p>
             <p className="text-3xl font-bold text-amber-400">{total}</p>
           </div>
           {bySede.map(({ sede, count }) => (
-            <div key={sede} className="bg-zinc-800 rounded-xl p-4">
-              <p className="text-zinc-400 text-xs uppercase tracking-wider mb-1 truncate">{sede}</p>
-              <p className="text-2xl font-bold text-white">{count}</p>
+            <div key={sede} className="bg-zinc-800 rounded-xl p-3 sm:p-4 min-w-0">
+              <p className="text-zinc-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 truncate">{sede}</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{count}</p>
             </div>
           ))}
         </div>
@@ -570,28 +570,30 @@ export default function AdminPage() {
             <option value="">Tutte le sedi</option>
             {SEDI.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <button
-            onClick={loadBookings}
-            className="bg-zinc-700 hover:bg-zinc-600 px-4 py-2.5 rounded-xl text-sm transition-colors whitespace-nowrap"
-          >
-            ↻ Aggiorna
-          </button>
-          <button
-            onClick={downloadSummaryPDF}
-            disabled={pdfLoading || loading}
-            className="bg-amber-400 text-zinc-900 font-bold px-4 py-2.5 rounded-xl text-sm hover:bg-amber-300 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {pdfLoading ? 'Generazione PDF…' : '⬇ Scarica PDF'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={loadBookings}
+              className="flex-1 sm:flex-none bg-zinc-700 hover:bg-zinc-600 px-4 py-2.5 rounded-xl text-sm transition-colors whitespace-nowrap"
+            >
+              ↻ Aggiorna
+            </button>
+            <button
+              onClick={downloadSummaryPDF}
+              disabled={pdfLoading || loading}
+              className="flex-1 sm:flex-none bg-amber-400 text-zinc-900 font-bold px-4 py-2.5 rounded-xl text-sm hover:bg-amber-300 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {pdfLoading ? 'Generazione PDF…' : '⬇ Scarica PDF'}
+            </button>
+          </div>
         </div>
 
         {/* Vista */}
-        <div className="flex gap-1 mb-4 bg-zinc-800 rounded-xl p-1 w-fit">
+        <div className="flex gap-1 mb-4 bg-zinc-800 rounded-xl p-1 w-full sm:w-fit">
           {(['table', 'map'] as const).map(v => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors ${view === v ? 'bg-amber-400 text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+              className={`flex-1 sm:flex-none px-4 py-2 sm:py-1.5 rounded-lg text-sm font-bold transition-colors ${view === v ? 'bg-amber-400 text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
             >
               {v === 'table' ? 'Tabella' : 'Mappa'}
             </button>
@@ -602,152 +604,132 @@ export default function AdminPage() {
         {loading ? (
           <div className="text-center py-20 text-zinc-500">Caricamento…</div>
         ) : view === 'map' ? (
-          <div className="rounded-xl border border-zinc-800 p-4 overflow-x-auto">
-            <div className="min-w-max mx-auto w-fit">
-              <div className="bg-zinc-800/80 text-zinc-300 text-center py-2 rounded-lg mb-6 font-bold tracking-[0.3em] uppercase text-xs">
-                Palco
+          <>
+            <p className="sm:hidden text-zinc-500 text-xs text-center mb-2">← Scorri lateralmente · tocca un posto per i dettagli →</p>
+            <div className="rounded-xl border border-zinc-800 py-4 pr-4 overflow-x-auto">
+              <div className="min-w-max mx-auto w-fit">
+                <div className="bg-zinc-800/80 text-zinc-300 text-center py-2 rounded-lg mb-6 ml-7 font-bold tracking-[0.3em] uppercase text-xs">
+                  Palco
+                </div>
+                {renderMapBlock(FRONT_ROWS)}
+                <div className="border-t border-dashed border-zinc-700 my-4 ml-7" />
+                {renderMapBlock(BACK_ROWS)}
               </div>
-              {renderMapBlock(FRONT_ROWS)}
-              <div className="border-t border-dashed border-zinc-700 my-4" />
-              {renderMapBlock(BACK_ROWS)}
             </div>
-          </div>
+
+            {mapSeat && (
+              <div className="fixed sm:static bottom-0 left-0 right-0 z-20 sm:mt-4 bg-zinc-900 border-t sm:border border-zinc-700 sm:rounded-xl px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-3 flex items-center gap-3">
+                <span className="bg-amber-400 text-zinc-900 font-bold px-2 py-0.5 rounded font-mono text-sm shrink-0">
+                  {mapSeat.seat_number}
+                </span>
+                <div className="flex-1 min-w-0">
+                  {mapBooking ? (
+                    <>
+                      <p className="text-white font-semibold truncate">{mapBooking.last_name} {mapBooking.first_name}</p>
+                      <p className="text-zinc-400 text-xs">{mapBooking.sede} · {formatDate(mapBooking.created_at)}</p>
+                    </>
+                  ) : (
+                    <p className="text-zinc-400">Posto libero</p>
+                  )}
+                </div>
+                <button onClick={() => setMapSeatId(null)} className="text-zinc-400 hover:text-white text-xl px-2 shrink-0" aria-label="Chiudi">
+                  ×
+                </button>
+              </div>
+            )}
+          </>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-zinc-500">Nessuna prenotazione trovata.</div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-zinc-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-zinc-800/80 text-zinc-400 uppercase text-xs tracking-wider">
-                  <th className="text-left px-4 py-3">Posto</th>
-                  <th className="text-left px-4 py-3">Nome</th>
-                  <th className="text-left px-4 py-3">Cognome</th>
-                  <th className="text-left px-4 py-3">Sede</th>
-                  <th className="text-left px-4 py-3">Data</th>
-                  <th className="text-right px-4 py-3">Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((b, i) => (
-                  <tr
-                    key={b.id}
-                    className={`border-t border-zinc-800 transition-colors ${i % 2 === 0 ? 'bg-zinc-900/40' : 'bg-zinc-950/40'} hover:bg-zinc-800/30`}
-                  >
-                    {editing?.id === b.id ? (
-                      <>
-                        {/* Posto non modificabile */}
-                        <td className="px-4 py-3">
-                          <span className="bg-amber-400 text-zinc-900 font-bold px-2 py-0.5 rounded font-mono text-xs">
-                            {b.seats?.seat_number}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            className="bg-zinc-800 border border-zinc-600 text-white rounded-lg px-2 py-1 w-full focus:outline-none focus:border-amber-400"
-                            value={editing.first_name}
-                            onChange={e => setEditing({ ...editing, first_name: e.target.value })}
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            className="bg-zinc-800 border border-zinc-600 text-white rounded-lg px-2 py-1 w-full focus:outline-none focus:border-amber-400"
-                            value={editing.last_name}
-                            onChange={e => setEditing({ ...editing, last_name: e.target.value })}
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <select
-                            className="bg-zinc-800 border border-zinc-600 text-white rounded-lg px-2 py-1 w-full focus:outline-none focus:border-amber-400"
-                            value={editing.sede}
-                            onChange={e => setEditing({ ...editing, sede: e.target.value })}
-                          >
-                            {SEDI.map(s => <option key={s} value={s}>{s}</option>)}
-                          </select>
-                        </td>
-                        <td className="px-4 py-3 text-zinc-500">
-                          {new Date(b.created_at).toLocaleDateString('it-IT')}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex gap-2 justify-end">
-                            <button
-                              onClick={saveEdit}
-                              disabled={savingId === b.id}
-                              className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-                            >
-                              {savingId === b.id ? '…' : 'Salva'}
-                            </button>
-                            <button
-                              onClick={() => setEditing(null)}
-                              className="bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                            >
-                              Annulla
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="px-4 py-3">
-                          <span className="bg-amber-400 text-zinc-900 font-bold px-2 py-0.5 rounded font-mono text-xs">
-                            {b.seats?.seat_number}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-zinc-200">{b.first_name}</td>
-                        <td className="px-4 py-3 text-zinc-200">{b.last_name}</td>
-                        <td className="px-4 py-3">
-                          <span className="bg-zinc-700 text-zinc-300 px-2 py-0.5 rounded text-xs">{b.sede}</span>
-                        </td>
-                        <td className="px-4 py-3 text-zinc-500 text-xs">
-                          {new Date(b.created_at).toLocaleDateString('it-IT', {
-                            day: '2-digit', month: '2-digit', year: 'numeric',
-                            hour: '2-digit', minute: '2-digit',
-                          })}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {confirmDelete === b.id ? (
-                            <div className="flex gap-2 justify-end items-center">
-                              <span className="text-zinc-400 text-xs">Sicuro?</span>
-                              <button
-                                onClick={() => deleteBooking(b.id)}
-                                disabled={deletingId === b.id}
-                                className="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-                              >
-                                {deletingId === b.id ? '…' : 'Sì, elimina'}
-                              </button>
-                              <button
-                                onClick={() => setConfirmDelete(null)}
-                                className="bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                              >
-                                No
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex gap-2 justify-end">
-                              <button
-                                onClick={() => setEditing({ id: b.id, first_name: b.first_name, last_name: b.last_name, sede: b.sede })}
-                                className="bg-zinc-600 hover:bg-zinc-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                              >
-                                Modifica
-                              </button>
-                              <button
-                                onClick={() => setConfirmDelete(b.id)}
-                                className="bg-rose-800 hover:bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                              >
-                                Elimina
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </>
-                    )}
+          <>
+            {/* Telefono: schede */}
+            <div className="md:hidden flex flex-col gap-2">
+              {filtered.map(b => {
+                const edit = editing?.id === b.id ? renderEditFields(b, 'px-3 py-2 text-base') : null
+                return (
+                  <div key={b.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+                    <div className="flex items-start gap-3">
+                      <span className="bg-amber-400 text-zinc-900 font-bold px-2 py-0.5 rounded font-mono text-xs shrink-0 mt-0.5">
+                        {b.seats?.seat_number}
+                      </span>
+                      {edit ? (
+                        <div className="flex-1 flex flex-col gap-2">
+                          {edit.first}
+                          {edit.last}
+                          {edit.sede}
+                        </div>
+                      ) : (
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-semibold truncate">{b.last_name} {b.first_name}</p>
+                          <p className="text-zinc-500 text-xs mt-0.5">
+                            <span className="text-zinc-300">{b.sede}</span> · {formatDate(b.created_at)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3">{edit ? edit.actions : renderRowActions(b)}</div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Desktop: tabella */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-zinc-800">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-zinc-800/80 text-zinc-400 uppercase text-xs tracking-wider">
+                    <th className="text-left px-4 py-3">Posto</th>
+                    <th className="text-left px-4 py-3">Nome</th>
+                    <th className="text-left px-4 py-3">Cognome</th>
+                    <th className="text-left px-4 py-3">Sede</th>
+                    <th className="text-left px-4 py-3">Data</th>
+                    <th className="text-right px-4 py-3">Azioni</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filtered.map((b, i) => {
+                    const edit = editing?.id === b.id ? renderEditFields(b, 'px-2 py-1') : null
+                    return (
+                      <tr
+                        key={b.id}
+                        className={`border-t border-zinc-800 transition-colors ${i % 2 === 0 ? 'bg-zinc-900/40' : 'bg-zinc-950/40'} hover:bg-zinc-800/30`}
+                      >
+                        <td className="px-4 py-3">
+                          <span className="bg-amber-400 text-zinc-900 font-bold px-2 py-0.5 rounded font-mono text-xs">
+                            {b.seats?.seat_number}
+                          </span>
+                        </td>
+                        {edit ? (
+                          <>
+                            <td className="px-4 py-3">{edit.first}</td>
+                            <td className="px-4 py-3">{edit.last}</td>
+                            <td className="px-4 py-3">{edit.sede}</td>
+                            <td className="px-4 py-3 text-zinc-500">
+                              {new Date(b.created_at).toLocaleDateString('it-IT')}
+                            </td>
+                            <td className="px-4 py-3 text-right">{edit.actions}</td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="px-4 py-3 text-zinc-200">{b.first_name}</td>
+                            <td className="px-4 py-3 text-zinc-200">{b.last_name}</td>
+                            <td className="px-4 py-3">
+                              <span className="bg-zinc-700 text-zinc-300 px-2 py-0.5 rounded text-xs">{b.sede}</span>
+                            </td>
+                            <td className="px-4 py-3 text-zinc-500 text-xs">{formatDate(b.created_at)}</td>
+                            <td className="px-4 py-3 text-right">{renderRowActions(b)}</td>
+                          </>
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
-        <p className="text-zinc-600 text-xs mt-4 text-right">{filtered.length} prenotazione{filtered.length !== 1 ? 'i' : 'e'} visualizzata{filtered.length !== 1 ? 'e' : ''}</p>
+        <p className={`text-zinc-600 text-xs mt-4 text-right ${view === 'map' && mapSeat ? 'mb-20 sm:mb-0' : ''}`}>{filtered.length} prenotazion{filtered.length !== 1 ? 'i' : 'e'} visualizzat{filtered.length !== 1 ? 'e' : 'a'}</p>
       </div>
     </main>
   )
