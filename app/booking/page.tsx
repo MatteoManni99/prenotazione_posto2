@@ -157,7 +157,7 @@ export default function BookingPage() {
         setError('Uno dei posti scelti è appena stato prenotato da qualcun altro. Torna alla mappa e scegline un altro.')
         loadSeats()
       } else if (dbErr.code === '42501') {
-        setError('Prenotazione rifiutata dal database (regola di sicurezza su Supabase).')
+        setError(`Prenotazione rifiutata dal database (regola di sicurezza su Supabase): ${dbErr.message}`)
       } else {
         setError(`Errore durante la prenotazione. Riprova. (${dbErr.code ?? ''} ${dbErr.message})`)
       }
